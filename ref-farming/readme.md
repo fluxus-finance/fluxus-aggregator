@@ -369,3 +369,66 @@ pub(crate) fn suggested_min_storage_usage() -> Balance {
 And when a farmer owes storage fee, then before he storage_deposit more fee,  
 all changeable method would fail with ERR11_INSUFFICIENT_STORAGE.
 
+# Things need to explain
+## Storage fee in this contract
+As each farmer would have a place to record his rps in each farm he involved, the storage belongs to a farmer may increase out of his notice.  
+
+For example, when a new farm established and running, which accepts the farmer's seed that has been staked in the contract, then at the following action such as claim_reward, or deposit/withdraw seeds invoked by the farmer, his storage would expand to record the new rps related to that farm.  
+
+Consider that, and also to improve farmer's user-experience, we have a `suggested_min_storage_usage()` which covers 5 seed, 5 reward and 10 farms as one shot. When farmer register for the first time, we will force him to deposit more or equal to that amount, which is about 1,688 bytes, 0.0134 near. 
+```rust
+const MAX_ACCOUNT_LENGTH: u128 = 64;
+const MIN_FARMER_LENGTH: u128 = MAX_ACCOUNT_LENGTH + 16 + 4 * 3;
+/// Returns minimal storage usage possible.
+/// 5 reward tokens, 5 seed tokens, 10 farms as assumption.
+pub(crate) fn suggested_min_storage_usage() -> Balance {
+    (
+        MIN_FARMER_LENGTH 
+        + 2_u128 * 5_u128 * (MAX_ACCOUNT_LENGTH + 16)
+        + 10_u128 * (MAX_ACCOUNT_LENGTH + 32)
+    ) * env::storage_byte_cost()
+}
+```
+
+
+
+Calling some methods:
+You already saw the methods that we can call. If you want to call they by terminal, pay attention in this some examples:
+
+To initialize the contract:
+near call CONTRACTID new '{"owner_id": "ACCOUNTID"}' --accountId ACCOUNTID
+Change the CONTRACID and the ACCOUNTID for the id of the contract that you deployed and your account.
+
+To create a farm:
+near call CONTRACTID create_simple_farm '{"terms":{"seed_id": "EXCHANGEID@POOLID", "reward_token": "TOKEN", "start_at": 0, "reward_per_session": "10" , "session_interval": 10000000 }, "min_deposit":"1"}' --accountId ACCOUNTID --deposit 0.000000000000000000000001 --gas=50000000000000
+Change the CONTRACID and the ACCOUNTID for the id of the contract that you deployed and your account. EXCHANGEID is the id of the exchange contract already deployed and POOLID is the id of the pool in the exchange contract.
+
+To register an user to the farm and deposit near:
+near call CONTRACTID storage_deposit '{"account_id": "ACCOUNTID", "registration_only": false}'
+--accountId ACCOUNTID --deposit=0.000000000000000000000001 --amount=1 --gas=50000000000000
+Change the CONTRACID and the ACCOUNTID for the id of the contract that you deployed and your account.
+
+To register an user to the farm and deposit near:
+near call EXCHANGEID mft_register "{"token_id":":POOLID", "account_id": "CONTRACTID"}" 
+--accountId ACCOUNTID --deposit=0.01 --gas=50000000000000
+Change the CONTRACID and the ACCOUNTID for the id of the contract that you deployed and your account. EXCHANGEID is the id of the exchange contract already deployed and POOLID is the id of the pool in the exchange contract.
+
+To do Staking:
+near call EXCHANGEID mft_transfer_call '{"receiver_id": "CONTRACID", "token_id":":POOLID", "amount": "SHARESOFTHEPOOL", "msg": ""}' --account_id=ACCOUNTID --amount=0.000000000000000000000001 --gas=300000000000000
+Change the CONTRACID and the ACCOUNTID for the id of the contract that you deployed and your account. EXCHANGEID is the id of the exchange contract already deployed and POOLID is the id of the pool in the exchange contract. The parameter SHARESOFTHEPOOL is the quantity of shares that an user has of a pool.
+
+To do Unstaking:
+near call CONTRACID withdraw_seed '{"seed_id": "EXCHANGEID@POOLID", "amount": "SHARESOFTHEPOOL"}' --account_id=ACCOUNTID --amount=0.000000000000000000000001 --gas=300000000000000
+Change the CONTRACID and the ACCOUNTID for the id of the contract that you deployed and your account. EXCHANGEID is the id of the exchange contract already deployed and POOLID is the id of the pool in the exchange contract. The parameter SHARESOFTHEPOOL is the quantity of shares that an user has of a pool.
+
+To register some token:
+# if needed, register farming contract to reward token
+near call $TOKEN storage_deposit "{\"account_id\": \"$FARMING\"}" --account_id=pika456.testnet --amount 0.00125
+
+# deposit reward token into the farm
+near call TOKEN ft_transfer_call "{"receiver_id": "CONTRACID", "amount": "2400000000000000000000", "msg": "EXCHANGEID@POOLID#NUMBEROFTHEFARM"}" --account_id=ACCOUNTID --amount=0.000000000000000000000001 --gas=100000000000000
+Change the CONTRACID and the ACCOUNTID for the id of the contract that you deployed and your account. EXCHANGEID is the id of the exchange contract already deployed and POOLID is the id of the pool in the exchange contract. The parameter SHARESOFTHEPOOL is the quantity of shares that an user has of a pool.
+
+TOKEN is the token contract.
+
+NUMBEROFTHEFARM is the farm number.

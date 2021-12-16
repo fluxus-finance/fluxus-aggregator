@@ -1,47 +1,118 @@
-# Ref Finance Contracts
+# Fluxus Contracts
 
-This mono repo contains the source code for the smart contracts of Ref Finance on [NEAR](https://near.org).
+Here we have all the Fluxus smart contract code. This repository has three main parts:
+
+ -> Token-Contract
+
+ -> Exchange-Contract
+
+ -> Farming-Contract.
+
+&nbsp;
 
 ## Contracts
 
-| Contract | Reference | Description |
-| - | - | - |
-| [test-token](test-token/src/lib.rs) | - | Test token contract |
-| [ref-exchange](ref-exchange/src/lib.rs) | [docs](https://ref-finance.gitbook.io/ref-finance/smart-contracts/ref-exchange) | Main exchange contract, that allows to deposit and withdraw tokens, exchange them via various pools |
+| Contract | Description |
+| - | - |
+| [test-token](test-token)  | Contract to do a simple fungible token. |
+| [ref-exchange](ref-exchange)  | Main exchange contract, that allows to deposit and withdraw tokens, exchange them via various pools. |
+| [ref-farming](ref-farming)  | Main farm contract, that allows to create farms and do stake operations. |
+|  |  |
 
-## Development
+&nbsp;
+
+
+## Essential installation
 
 1. Install `rustup` via https://rustup.rs/
-2. Run the following:
 
+Run the following:
 ```
 rustup default stable
 rustup target add wasm32-unknown-unknown
 ```
 
-### Testing
+2. Install `near-cli` via https://docs.near.org/docs/tools/near-cli
 
-Contracts have unit tests and also integration tests using NEAR Simulation framework. All together can be run:
+Run the following:
+```
+npm install -g near-cli
+```
+&nbsp;
 
+## Testing
+
+To run contract unit tests, use:
+
+For the exchange part:
 ```
 cd ref-exchange
-cargo test --all
+cargo test 
 ```
 
-### Compiling
+For the farming part:
+```
+cd ref-farming
+cargo test 
+```
 
-You can build release version by running next scripts inside each contract folder:
+&nbsp;
 
+## Compiling
+
+To compile the code, you can use:
+
+For the exchange part:
 ```
 cd ref-exchange
+./build_local.sh
+```
+For the farming part:
+```
+cd ref-farming
+./build_local.sh
+```
+For the token part:
+```
+cd test-token
 ./build.sh
 ```
 
-### Deploying to TestNet
+&nbsp;
 
-To deploy to TestNet, you can use next command:
+## Deploying to TestNet
+
+To deploy the contracts to TestNet, you can use the following:
+
+Deploying the farm contract in a dev near account:
+```
+near dev-deploy --wasmFile ../target/wasm32-unknown-unknown/release/ref_farming.wasm
+```
+
+Deploying the exchange contract in a dev near account:
+```
+near dev-deploy --wasmFile ../target/wasm32-unknown-unknown/release/ref_exchange.wasm
+```
+
+Deploying the token contract in a dev near account:
+```
+near dev-deploy --wasmFile ../target/wasm32-unknown-unknown/release/test_token.wasm
+```
+
+
+You can see the contract Id after use de dev-deploy command. Copy it because it will be used later. 
+Remember thar this contract Id can also be found in the folder `neardev`.
+
+It is also cool to say that if you want to deploy something in an specific contract Id, you need to use the:
+```
+near deploy
+```
+instead the:
 ```
 near dev-deploy
 ```
 
-This will output on the contract ID it deployed.
+Example:
+```
+near deploy --wasmFile ../target/wasm32-unknown-unknown/release/ref_exchange.wasm --accountId juninho123.testnet
+```

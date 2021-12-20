@@ -421,7 +421,7 @@ Change the CONTRACID and the ACCOUNTID for the id of the contract that you deplo
 
 
 
-- To register an user to the farm and deposit near:
+- To register an token to the farm and deposit near:
 ```cmd
 near call EXCHANGEID mft_register "{"token_id":":POOLID", "account_id": "CONTRACTID"}" 
 --accountId ACCOUNTID --deposit=0.01 --gas=50000000000000

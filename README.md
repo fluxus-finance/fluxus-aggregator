@@ -12,12 +12,12 @@ Here we have all the Fluxus smart contract code. This repository has three main 
 
 ## Contracts
 
-| Contract | Description |
-| - | - |
-| [test-token](test-token)  | Contract to do a simple fungible token. |
-| [ref-exchange](ref-exchange)  | Main exchange contract, that allows to deposit and withdraw tokens, exchange them via various pools. |
-| [ref-farming](ref-farming)  | Main farm contract, that allows to create farms and do stake operations. |
-|  |  |
+| Contract                   | Description                                                                                          |
+| -------------------------- | ---------------------------------------------------------------------------------------------------- |
+| [test-token](test-token)   | Contract to do a simple fungible token.                                                              |
+| [ref-router](ref-router)   | Main exchange contract, that allows to deposit and withdraw tokens, exchange them via various pools. |
+| [fluxus-farm](fluxus-farm) | Main farm contract, that allows to create farms and do stake operations.                             |
+|                            |                                                                                                      |
 
 &nbsp;
 
@@ -46,13 +46,13 @@ To run contract unit tests, use:
 
 For the exchange part:
 ```
-cd ref-exchange
+cd ref-router
 cargo test 
 ```
 
 For the farming part:
 ```
-cd ref-farming
+cd fluxus-farm
 cargo test 
 ```
 
@@ -64,12 +64,12 @@ To compile the code, you can use:
 
 For the exchange part:
 ```
-cd ref-exchange
+cd ref-router
 ./build_local.sh
 ```
 For the farming part:
 ```
-cd ref-farming
+cd fluxus-farm
 ./build_local.sh
 ```
 For the token part:
@@ -91,7 +91,7 @@ near dev-deploy --wasmFile ../target/wasm32-unknown-unknown/release/ref_farming.
 
 Deploying the exchange contract in a dev near account:
 ```
-near dev-deploy --wasmFile ../target/wasm32-unknown-unknown/release/ref_exchange.wasm
+near dev-deploy --wasmFile ../target/wasm32-unknown-unknown/release/ref-router.wasm
 ```
 
 Deploying the token contract in a dev near account:
@@ -114,5 +114,5 @@ near dev-deploy
 
 Example:
 ```
-near deploy --wasmFile ../target/wasm32-unknown-unknown/release/ref_exchange.wasm --accountId juninho123.testnet
+near deploy --wasmFile ../target/wasm32-unknown-unknown/release/ref-router.wasm --accountId juninho123.testnet
 ```

@@ -1,8 +1,8 @@
 [workspace]
 members = [
-    "./ref-exchange",
+    "./ref-router",
     "./test-token",
-    "./ref-farming"
+    "./fluxus-farm"
 ]
 
 
